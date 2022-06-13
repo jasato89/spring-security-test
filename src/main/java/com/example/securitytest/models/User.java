@@ -3,6 +3,7 @@ package com.example.securitytest.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -10,9 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
-public class User {
+public class User  {
+    //El id puede ser el username porque en todo caso el username siempre será único
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,8 +33,6 @@ public class User {
         this.password = password;
 
     }
-
-
 
     public Long getId() {
         return id;
@@ -69,6 +68,5 @@ public class User {
 
     public void setRole(String role) {
         roles.add(new Role(role, this));
-
     }
 }

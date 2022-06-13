@@ -8,10 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -22,6 +19,7 @@ public class UserController {
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+
     @GetMapping("/say-hi")
     public String sayHi() {
         return "Hi";
@@ -29,16 +27,25 @@ public class UserController {
 
     @PostMapping("/create-user")
     public User createNewUser(@RequestBody User user, @AuthenticationPrincipal UserDetails userDetails){
+        User userCreador = new User(userDetails.getUsername(), userDetails.getPassword());
+        System.out.println(userCreador.getUsername());
         if (userRepository.findByUsername(user.getUsername()).isPresent()){
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Username already exists");
         }
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
+
         User user1 = userRepository.save(new User(user.getUsername(),
                 passwordEncoder.encode(user.getPassword())));
         user1.setRole("USER");
         return userRepository.save(user1);
+    }
+
+    @GetMapping("/modify-password")
+    public void modifyPassword(@RequestParam String newPassword, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userRepository.findByUsername(userDetails.getUsername()).get();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
     }
 
     @GetMapping("/get-user-info")

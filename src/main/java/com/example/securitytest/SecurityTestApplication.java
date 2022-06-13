@@ -30,7 +30,7 @@ public class SecurityTestApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-       User user = userRepository.save(new User("jasato", passwordEncoder.encode("1234")));
+       User user = userRepository.save(new User("jaume", passwordEncoder.encode("1234")));
         System.out.println(user.getUsername());
        user.setRole("ADMIN");
 
